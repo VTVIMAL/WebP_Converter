@@ -93,12 +93,20 @@ class WebPConverter:
         else:
             output_path = Path(output_dir)
         
+        # Enhanced statistics
         stats = {
             'total_files': 0,
             'converted': 0,
             'failed': 0,
-            'skipped': 0
+            'skipped': 0,
+            'format_counts': {},  # Count per format
+            'webp_found': 0,      # WebP files already in input
+            'total_output_files': 0  # Total files in output folder
         }
+        
+        # Initialize format counts
+        for fmt in self.supported_formats:
+            stats['format_counts'][fmt] = 0
         
         for root, dirs, files in os.walk(input_path):
             rel_dir = os.path.relpath(root, input_path)
@@ -108,8 +116,14 @@ class WebPConverter:
                 file_path = Path(root) / file
                 if file_path.suffix.lower() in self.supported_formats:
                     stats['total_files'] += 1
-                    if file_path.suffix.lower() == '.webp':
+                    
+                    # Count by format
+                    suffix = file_path.suffix.lower()
+                    stats['format_counts'][suffix] += 1
+                    
+                    if suffix == '.webp':
                         stats['skipped'] += 1
+                        stats['webp_found'] += 1
                         continue
                     
                     # Generate unique output filename
@@ -122,7 +136,70 @@ class WebPConverter:
                     else:
                         stats['failed'] += 1
                         print(f"✗ Failed: {file_path}")
+        
+        # Count total files in output folder
+        stats['total_output_files'] = self._count_output_files(output_path)
+        
         return stats
+    
+    def _count_output_files(self, output_path: Path) -> int:
+        """Count total files in the output directory recursively."""
+        count = 0
+        for root, dirs, files in os.walk(output_path):
+            count += len(files)
+        return count
+    
+    def print_conversion_summary(self, stats: dict, input_dir: str, output_dir: str):
+        """
+        Print a detailed conversion summary.
+        
+        Args:
+            stats: Statistics from convert_directory
+            input_dir: Input directory path
+            output_dir: Output directory path
+        """
+        print("\n" + "="*70)
+        print("📊 WEBP CONVERSION SUMMARY")
+        print("="*70)
+        
+        # Input folder analysis
+        print(f"\n📁 INPUT FOLDER: {input_dir}")
+        print(f"   Total supported images found: {stats['total_files']}")
+        
+        if stats['webp_found'] > 0:
+            print(f"   WebP files found (already in WebP format): {stats['webp_found']}")
+        
+        # Format breakdown
+        print(f"\n📋 FORMAT BREAKDOWN:")
+        total_convertible = 0
+        for fmt, count in sorted(stats['format_counts'].items()):
+            if count > 0:
+                if fmt == '.webp':
+                    print(f"   {fmt.upper()}: {count} (skipped - already WebP)")
+                else:
+                    print(f"   {fmt.upper()}: {count}")
+                    total_convertible += count
+        
+        # Conversion results
+        print(f"\n🔄 CONVERSION RESULTS:")
+        print(f"   Successfully converted: {stats['converted']}")
+        print(f"   Failed conversions: {stats['failed']}")
+        print(f"   Skipped (already WebP): {stats['skipped']}")
+        
+        # Output folder summary
+        print(f"\n📁 OUTPUT FOLDER: {output_dir}")
+        print(f"   Total files in output: {stats['total_output_files']}")
+        
+        # Success rate
+        if total_convertible > 0:
+            success_rate = (stats['converted'] / total_convertible) * 100
+            print(f"\n✅ SUCCESS RATE: {success_rate:.1f}%")
+            print(f"   Converted: {stats['converted']}/{total_convertible} images")
+        
+        if stats['failed'] > 0:
+            print(f"   Failed: {stats['failed']} images")
+        
+        print("="*70)
     
     def get_supported_formats(self) -> List[str]:
         """Get list of supported input formats."""
@@ -339,6 +416,9 @@ class WebPConverterGUI:
                     self.progress_var.set("Conversion completed!")
                 else:
                     self.progress_var.set(f"Conversion completed with {stats['failed']} errors")
+                
+                # Print detailed summary
+                self.converter.print_conversion_summary(stats, input_path, output_path or str(Path(input_path).parent / f"{Path(input_path).name}_webp"))
         
         except Exception as e:
             self.log_message(f"Error: {e}")
@@ -430,11 +510,8 @@ Examples:
         print(f"Converting directory: {input_path}")
         stats = converter.convert_directory(input_path, output_path, quality, lossless)
         
-        print(f"\nConversion Summary:")
-        print(f"Total files: {stats['total_files']}")
-        print(f"Converted: {stats['converted']}")
-        print(f"Failed: {stats['failed']}")
-        print(f"Skipped: {stats['skipped']}")
+        # Print detailed summary
+        converter.print_conversion_summary(stats, input_path, output_path or str(Path(input_path).parent / f"{Path(input_path).name}_webp"))
         
         if stats['failed'] > 0:
             sys.exit(1)
