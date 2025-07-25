@@ -73,16 +73,19 @@ class WebPConverter:
             return False
     
     def convert_directory(self, input_dir: str, output_dir: Optional[str] = None,
-                         quality: int = 80, lossless: bool = False) -> dict:
+                         quality: int = 80, lossless: bool = False, skip_node_modules: Optional[bool] = None) -> dict:
         """
         Recursively convert all supported images in a directory (and subdirectories) to WebP format,
         preserving the folder structure in the output directory.
+        If node_modules is found, alert the user and ask for confirmation to skip it.
+        Images over 50MB are skipped.
         
         Args:
             input_dir: Input directory path
             output_dir: Output directory path (optional)
             quality: WebP quality (0-100)
             lossless: Whether to use lossless compression
+            skip_node_modules: If True, skip node_modules without asking. If None, ask in CLI.
             
         Returns:
             dict: Statistics about the conversion process
@@ -93,12 +96,30 @@ class WebPConverter:
         else:
             output_path = Path(output_dir)
         
+        # Detect node_modules folders
+        node_modules_found = []
+        for root, dirs, files in os.walk(input_path):
+            if 'node_modules' in dirs:
+                node_modules_found.append(str(Path(root) / 'node_modules'))
+        
+        # If node_modules found and not already handled, ask user in CLI
+        if node_modules_found and skip_node_modules is None:
+            print("\n⚠️  Warning: 'node_modules' folder(s) found:")
+            for nm in node_modules_found:
+                print(f"   {nm}")
+            resp = input("\nDo you want to skip 'node_modules' and proceed with conversion? (y/n): ").strip().lower()
+            if resp != 'y':
+                print("Aborting conversion.")
+                sys.exit(1)
+            skip_node_modules = True
+        
         # Enhanced statistics
         stats = {
             'total_files': 0,
             'converted': 0,
             'failed': 0,
             'skipped': 0,
+            'skipped_large': 0,
             'format_counts': {},  # Count per format
             'webp_found': 0,      # WebP files already in input
             'total_output_files': 0  # Total files in output folder
@@ -108,7 +129,12 @@ class WebPConverter:
         for fmt in self.supported_formats:
             stats['format_counts'][fmt] = 0
         
+        MAX_IMAGE_SIZE = 50 * 1024 * 1024  # 50MB
+        
         for root, dirs, files in os.walk(input_path):
+            # Skip node_modules if requested
+            if skip_node_modules and 'node_modules' in dirs:
+                dirs.remove('node_modules')
             rel_dir = os.path.relpath(root, input_path)
             out_dir = output_path / rel_dir if rel_dir != '.' else output_path
             out_dir.mkdir(parents=True, exist_ok=True)
@@ -124,6 +150,18 @@ class WebPConverter:
                     if suffix == '.webp':
                         stats['skipped'] += 1
                         stats['webp_found'] += 1
+                        continue
+                    
+                    # Check image size
+                    try:
+                        size = file_path.stat().st_size
+                    except Exception as e:
+                        print(f"✗ Failed to get size for {file_path}: {e}")
+                        stats['failed'] += 1
+                        continue
+                    if size > MAX_IMAGE_SIZE:
+                        print(f"⚠️  Skipping {file_path} (size {size / (1024*1024):.2f} MB > 50MB)")
+                        stats['skipped_large'] += 1
                         continue
                     
                     # Generate unique output filename
@@ -185,6 +223,8 @@ class WebPConverter:
         print(f"   Successfully converted: {stats['converted']}")
         print(f"   Failed conversions: {stats['failed']}")
         print(f"   Skipped (already WebP): {stats['skipped']}")
+        if stats.get('skipped_large', 0) > 0:
+            print(f"   Skipped (over 50MB): {stats['skipped_large']}")
         
         # Output folder summary
         print(f"\n📁 OUTPUT FOLDER: {output_dir}")
@@ -393,14 +433,22 @@ class WebPConverterGUI:
             
             if input_path_obj.is_file():
                 # Single file conversion
-                self.log_message(f"Converting single file: {input_path}")
+                MAX_IMAGE_SIZE = 50 * 1024 * 1024  # 50MB
+                try:
+                    file_size = input_path_obj.stat().st_size
+                except Exception as e:
+                    print(f"Error: Could not get file size for '{input_path}': {e}")
+                    sys.exit(1)
+                if file_size > MAX_IMAGE_SIZE:
+                    print(f"Error: The image '{input_path}' is too large ({file_size / (1024*1024):.2f} MB). Please use an image under 50MB.")
+                    sys.exit(1)
+                print(f"Converting: {input_path}")
                 success = self.converter.convert_image(input_path, output_path, quality, lossless)
                 if success:
-                    self.log_message("✓ Conversion completed successfully!")
-                    self.progress_var.set("Conversion completed!")
+                    print("✓ Conversion completed successfully!")
                 else:
-                    self.log_message("✗ Conversion failed!")
-                    self.progress_var.set("Conversion failed!")
+                    print("✗ Conversion failed!")
+                    sys.exit(1)
             else:
                 # Directory conversion
                 self.log_message(f"Converting directory: {input_path}")
@@ -498,6 +546,15 @@ Examples:
     
     if input_path_obj.is_file():
         # Single file conversion
+        MAX_IMAGE_SIZE = 50 * 1024 * 1024  # 50MB
+        try:
+            file_size = input_path_obj.stat().st_size
+        except Exception as e:
+            print(f"Error: Could not get file size for '{input_path}': {e}")
+            sys.exit(1)
+        if file_size > MAX_IMAGE_SIZE:
+            print(f"Error: The image '{input_path}' is too large ({file_size / (1024*1024):.2f} MB). Please use an image under 50MB.")
+            sys.exit(1)
         print(f"Converting: {input_path}")
         success = converter.convert_image(input_path, output_path, quality, lossless)
         if success:
