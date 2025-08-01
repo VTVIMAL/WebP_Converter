@@ -89,10 +89,18 @@ def verify_conversion(input_dir, output_dir, expected_format):
     # Check that each input image has a corresponding output file
     missing_files = []
     wrong_format_files = []
+    skipped_files = []
     
     for input_file in input_images:
         # Expected output filename
         expected_output = output_path / f"{input_file.stem}.{expected_format.lower()}"
+        
+        # Check if input file is already in target format
+        input_format = input_file.suffix.lower().lstrip('.')
+        if input_format == expected_format.lower():
+            # File is already in target format, so it's expected to be skipped
+            skipped_files.append(str(input_file))
+            continue
         
         if not expected_output.exists():
             missing_files.append(str(input_file))
@@ -101,13 +109,23 @@ def verify_conversion(input_dir, output_dir, expected_format):
             try:
                 with Image.open(expected_output) as img:
                     actual_format = img.format
-                    if actual_format != expected_format.upper():
-                        wrong_format_files.append((str(input_file), actual_format, expected_format.upper()))
+                    # Handle JPEG/JPG format name differences
+                    expected_format_upper = expected_format.upper()
+                    if expected_format_upper == 'JPG':
+                        expected_format_upper = 'JPEG'
+                    elif expected_format_upper == 'JPEG':
+                        expected_format_upper = 'JPEG'
+                    
+                    if actual_format != expected_format_upper:
+                        wrong_format_files.append((str(input_file), actual_format, expected_format_upper))
             except Exception as e:
                 wrong_format_files.append((str(input_file), f"Error: {e}", expected_format.upper()))
     
     # Report results
     success = True
+    
+    if skipped_files:
+        print(f"  Skipped files (already in target format): {skipped_files}")
     
     if missing_files:
         print(f"✗ Missing output files for: {missing_files}")
@@ -120,7 +138,8 @@ def verify_conversion(input_dir, output_dir, expected_format):
         success = False
     
     if success:
-        print(f"✓ All {len(input_images)} images successfully converted to {expected_format.upper()}")
+        converted_count = len(input_images) - len(skipped_files)
+        print(f"✓ All {converted_count} images successfully converted to {expected_format.upper()}")
         print(f"  Input directory: {input_dir}")
         print(f"  Output directory: {output_dir}")
     
