@@ -17,34 +17,36 @@ import threading
 
 
 class WebPConverter:
-    """Main class for converting images to WebP format."""
+    """Main class for converting images between formats."""
     
     def __init__(self):
         self.supported_formats = {
             '.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif', 
-            '.gif', '.ico', '.ppm', '.pgm', '.pbm', '.pnm'
+            '.gif', '.ico', '.ppm', '.pgm', '.pbm', '.pnm', '.webp'
+        }
+        self.format_map = {
+            'jpg': 'JPEG', 'jpeg': 'JPEG', 'png': 'PNG', 'bmp': 'BMP',
+            'tiff': 'TIFF', 'tif': 'TIFF', 'gif': 'GIF', 'ico': 'ICO',
+            'ppm': 'PPM', 'pgm': 'PPM', 'pbm': 'PPM', 'pnm': 'PPM', 'webp': 'WEBP'
         }
     
     def convert_image(self, input_path: str, output_path: Optional[str] = None, 
-                     quality: int = 80, lossless: bool = False) -> bool:
+                     quality: int = 80, lossless: bool = False, output_format: Optional[str] = None) -> bool:
         """
-        Convert a single image to WebP format.
-        
+        Convert a single image to the specified format.
         Args:
             input_path: Path to the input image
-            output_path: Path for the output WebP file (optional)
-            quality: WebP quality (0-100)
-            lossless: Whether to use lossless compression
-            
+            output_path: Path for the output file (optional)
+            quality: Quality for lossy formats (0-100)
+            lossless: Whether to use lossless compression (WebP only)
+            output_format: Desired output format (e.g., 'png', 'jpeg', 'webp')
         Returns:
             bool: True if conversion successful, False otherwise
         """
         try:
-            # Open the image
             with Image.open(input_path) as img:
-                # Convert to RGB if necessary (WebP doesn't support RGBA in some cases)
+                # Convert to RGB if necessary for most formats
                 if img.mode in ('RGBA', 'LA', 'P'):
-                    # Create a white background for transparent images
                     background = Image.new('RGB', img.size, (255, 255, 255))
                     if img.mode == 'P':
                         img = img.convert('RGBA')
@@ -52,47 +54,42 @@ class WebPConverter:
                     img = background
                 elif img.mode != 'RGB':
                     img = img.convert('RGB')
-                
+                # Determine output format
+                if output_format is None:
+                    if output_path is not None:
+                        ext = Path(output_path).suffix.lower().lstrip('.')
+                        output_format = self.format_map.get(ext, ext.upper())
+                    else:
+                        output_format = 'WEBP'
+                else:
+                    output_format = self.format_map.get(output_format.lower(), output_format.upper())
                 # Generate output path if not provided
                 if output_path is None:
                     input_file = Path(input_path)
-                    output_path = input_file.with_suffix('.webp')
-                
-                # Save as WebP
-                save_kwargs = {'format': 'WEBP'}
-                if lossless:
-                    save_kwargs['lossless'] = True
-                else:
+                    output_path = input_file.with_suffix(f'.{output_format.lower()}')
+                # Save with appropriate options
+                save_kwargs = {'format': output_format}
+                if output_format == 'WEBP':
+                    if lossless:
+                        save_kwargs['lossless'] = True
+                    else:
+                        save_kwargs['quality'] = quality
+                elif output_format in ('JPEG', 'JPG'):
                     save_kwargs['quality'] = quality
-                
                 img.save(output_path, **save_kwargs)
                 return True
-                
         except Exception as e:
             print(f"Error converting {input_path}: {e}")
             return False
     
     def convert_directory(self, input_dir: str, output_dir: Optional[str] = None,
-                         quality: int = 80, lossless: bool = False, skip_node_modules: Optional[bool] = None) -> dict:
+                         quality: int = 80, lossless: bool = False, output_format: Optional[str] = None, skip_node_modules: Optional[bool] = None) -> dict:
         """
-        Recursively convert all supported images in a directory (and subdirectories) to WebP format,
-        preserving the folder structure in the output directory.
-        If node_modules is found, alert the user and ask for confirmation to skip it.
-        Images over 50MB are skipped.
-        
-        Args:
-            input_dir: Input directory path
-            output_dir: Output directory path (optional)
-            quality: WebP quality (0-100)
-            lossless: Whether to use lossless compression
-            skip_node_modules: If True, skip node_modules without asking. If None, ask in CLI.
-            
-        Returns:
-            dict: Statistics about the conversion process
+        Recursively convert all supported images in a directory (and subdirectories) to the specified format.
         """
         input_path = Path(input_dir)
         if output_dir is None:
-            output_path = input_path.parent / f"{input_path.name}_webp"
+            output_path = input_path.parent / f"{input_path.name}_{output_format or 'converted'}"
         else:
             output_path = Path(output_dir)
         
@@ -147,9 +144,9 @@ class WebPConverter:
                     suffix = file_path.suffix.lower()
                     stats['format_counts'][suffix] += 1
                     
-                    if suffix == '.webp':
+                    # Skip if already in output format
+                    if output_format and suffix == f'.{output_format.lower()}':
                         stats['skipped'] += 1
-                        stats['webp_found'] += 1
                         continue
                     
                     # Check image size
@@ -166,9 +163,9 @@ class WebPConverter:
                     
                     # Generate unique output filename
                     base_output_path = out_dir / file_path.stem
-                    output_file = self._generate_unique_filename(base_output_path, file_path.suffix.lower())
+                    output_file = base_output_path.with_suffix(f'.{output_format.lower()}')
                     
-                    if self.convert_image(str(file_path), str(output_file), quality, lossless):
+                    if self.convert_image(str(file_path), str(output_file), quality, lossless, output_format):
                         stats['converted'] += 1
                         print(f"✓ Converted: {file_path} -> {output_file}")
                     else:
@@ -406,6 +403,7 @@ class WebPConverterGUI:
         output_path = self.output_var.get().strip()
         quality = self.quality_var.get()
         lossless = self.lossless_var.get()
+        output_format = self.output_var.get().strip().lower().lstrip('.') # Get output format from output path
         
         if not input_path:
             messagebox.showerror("Error", "Please select an input file or directory.")
@@ -422,11 +420,11 @@ class WebPConverterGUI:
         
         # Start conversion in separate thread
         thread = threading.Thread(target=self.convert_thread, 
-                                args=(input_path, output_path, quality, lossless))
+                                args=(input_path, output_path, quality, lossless, output_format))
         thread.daemon = True
         thread.start()
     
-    def convert_thread(self, input_path, output_path, quality, lossless):
+    def convert_thread(self, input_path, output_path, quality, lossless, output_format):
         """Conversion thread to avoid blocking the GUI."""
         try:
             input_path_obj = Path(input_path)
@@ -443,7 +441,7 @@ class WebPConverterGUI:
                     print(f"Error: The image '{input_path}' is too large ({file_size / (1024*1024):.2f} MB). Please use an image under 50MB.")
                     sys.exit(1)
                 print(f"Converting: {input_path}")
-                success = self.converter.convert_image(input_path, output_path, quality, lossless)
+                success = self.converter.convert_image(input_path, output_path, quality, lossless, output_format)
                 if success:
                     print("✓ Conversion completed successfully!")
                 else:
@@ -452,7 +450,7 @@ class WebPConverterGUI:
             else:
                 # Directory conversion
                 self.log_message(f"Converting directory: {input_path}")
-                stats = self.converter.convert_directory(input_path, output_path, quality, lossless)
+                stats = self.converter.convert_directory(input_path, output_path, quality, lossless, output_format)
                 
                 self.log_message(f"\nConversion Summary:")
                 self.log_message(f"Total files: {stats['total_files']}")
@@ -466,7 +464,7 @@ class WebPConverterGUI:
                     self.progress_var.set(f"Conversion completed with {stats['failed']} errors")
                 
                 # Print detailed summary
-                self.converter.print_conversion_summary(stats, input_path, output_path or str(Path(input_path).parent / f"{Path(input_path).name}_webp"))
+                self.converter.print_conversion_summary(stats, input_path, output_path or str(Path(input_path).parent / f"{Path(input_path).name}_{output_format}"))
         
         except Exception as e:
             self.log_message(f"Error: {e}")
@@ -492,6 +490,7 @@ Examples:
   %(prog)s image.jpg -o output.webp     # Convert with custom output name
   %(prog)s /path/to/images/             # Convert all images in directory
   %(prog)s --gui                        # Start GUI interface
+  %(prog)s --to-format png              # Convert to PNG format
         """
     )
     
@@ -505,6 +504,7 @@ Examples:
                        help='Start GUI interface')
     parser.add_argument('--formats', action='store_true', 
                        help='Show supported input formats')
+    parser.add_argument('--to-format', type=str, default='webp', help='Output format (e.g., webp, png, jpg, etc.)')
     
     args = parser.parse_args()
     
@@ -532,6 +532,7 @@ Examples:
     output_path = args.output
     quality = args.quality
     lossless = args.lossless
+    output_format = args.to_format
     
     # Validate quality
     if not 0 <= quality <= 100:
@@ -556,7 +557,7 @@ Examples:
             print(f"Error: The image '{input_path}' is too large ({file_size / (1024*1024):.2f} MB). Please use an image under 50MB.")
             sys.exit(1)
         print(f"Converting: {input_path}")
-        success = converter.convert_image(input_path, output_path, quality, lossless)
+        success = converter.convert_image(input_path, output_path, quality, lossless, output_format)
         if success:
             print("✓ Conversion completed successfully!")
         else:
@@ -565,10 +566,10 @@ Examples:
     else:
         # Directory conversion
         print(f"Converting directory: {input_path}")
-        stats = converter.convert_directory(input_path, output_path, quality, lossless)
+        stats = converter.convert_directory(input_path, output_path, quality, lossless, output_format)
         
         # Print detailed summary
-        converter.print_conversion_summary(stats, input_path, output_path or str(Path(input_path).parent / f"{Path(input_path).name}_webp"))
+        converter.print_conversion_summary(stats, input_path, output_path or str(Path(input_path).parent / f"{Path(input_path).name}_{output_format}"))
         
         if stats['failed'] > 0:
             sys.exit(1)

@@ -117,22 +117,22 @@ python webp_converter.py
 - **PNM**: .pnm
 
 ### Output Format
-- **WebP**: .webp
+- **Any format supported by Pillow**: e.g., .webp, .png, .jpg, .jpeg, .bmp, .tiff, .gif, .ico, .ppm, .pgm, .pbm, .pnm
 
 ## Technical Details
 
 ### Image Processing
 
 The converter handles various image modes:
-- **RGB images**: Converted directly to WebP
-- **RGBA images**: Transparent background converted to white
+- **RGB images**: Converted directly to the target format
+- **RGBA images**: Transparent background converted to white (for formats that do not support alpha)
 - **Palette images**: Converted to RGB with transparency handling
 - **Other modes**: Converted to RGB as needed
 
 ### Quality Settings
 
-- **Quality 0-100**: Controls compression level (higher = better quality, larger file)
-- **Lossless**: Preserves exact pixel values (larger files but no quality loss)
+- **Quality 0-100**: Controls compression level for lossy formats (higher = better quality, larger file)
+- **Lossless**: Preserves exact pixel values (for WebP only)
 
 ### Error Handling
 
@@ -148,24 +148,30 @@ The converter handles various image modes:
 # Convert a PNG to WebP with default settings
 python webp_converter.py photo.png
 
+# Convert a PNG to JPEG
+python webp_converter.py photo.png --to-format jpg
+
+# Convert a JPEG to PNG
+python webp_converter.py photo.jpg --to-format png
+
 # Convert with high quality
-python webp_converter.py photo.png -q 95
+python webp_converter.py photo.png --to-format jpg -q 95
 
 # Convert with custom output name
-python webp_converter.py photo.png -o optimized_photo.webp
+python webp_converter.py photo.png --to-format png -o optimized_photo.png
 ```
 
 ### Directory Conversion
 
 ```bash
-# Convert all images in current directory
-python webp_converter.py .
+# Convert all images in current directory to PNG
+python webp_converter.py . --to-format png
 
 # Convert with specific output directory
-python webp_converter.py /input_photos/ -o /webp_photos/
+python webp_converter.py /input_photos/ --to-format jpg -o /jpg_photos/
 
-# Convert with lossless compression
-python webp_converter.py /photos/ --lossless
+# Convert with lossless compression (WebP only)
+python webp_converter.py /photos/ --to-format webp --lossless
 ```
 
 ### Batch Processing Output
