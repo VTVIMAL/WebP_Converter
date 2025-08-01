@@ -1,0 +1,87 @@
+Missing files for PNG conversion
+==================================================
+
+/home/vimalvt/Desktop/Converter Test/free_templates_png/1_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/2_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/carousel_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/field-elements_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free-kit-new_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/Foi app landing page/blog-1_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/Foi app landing page/login_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/Hiro Landing/about_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/Miri Landing/dash-1_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/Purple React Free/basic-table_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/Purple React Free/login_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/Purple React Free/material-icons_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/Stellar React Free/chartjs_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/Stellar React Free/register-page_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/azia_admin_angular_free/chartjs_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/azia_admin_angular_free/dropdown_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/azia_admin_angular_free/tables-1_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/azia_admin_free/charts_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/azia_admin_free/dropdowns_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/azia_admin_free/tables_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/azia_admin_react_free/buttons_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/azia_admin_react_free/icons_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/breeze_admin_free/buttons_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/breeze_admin_free/charts_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/breeze_admin_free/icons_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/breeze_admin_free/tables_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/celestial_free_admin_template/buttons-2_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/celestial_free_admin_template/charts-2_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/celestial_free_admin_template/register-page_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/connect_plus_react_free/dropdowns_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/connect_plus_vue_free/buttons-3_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/corona_react_free/material-icons_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/corona_react_free/tables-1_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/edica_free_landing/about_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/edica_free_landing/dash_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/free_bootstrap_resume/blog-1_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/leadui/1_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/leadui/2_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/leadui/carousel_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/leadui/field-elements_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/leadui/free-kit-new_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/leadui/pill-badges_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/leadui/tab-elements_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/pollux_free/basic-elements-1_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/pollux_free/basic-table_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/pollux_free/login_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/purple_admin_vue_free/dropdown_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/purple_admin_vue_free/tables_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/purple_admin_vue_free/typography_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/purple_angular/basic-tables-2_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/purple_angular/buttons-2_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/purple_angular/charts-2_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/skydash_free/basic-tables-2_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/star_admin2_free/basic-table_webp.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/star_admin2_free/buttons_webp.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/star_admin_vue/basic-table_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/star_admin_vue/buttons-3_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/star_admin_vue/register-page_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/star_admin_vue/typography_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/stellar_angular_free/buttons_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/stellar_angular_free/charts_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/stellar_angular_free/dash_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/stellar_vue_free/basic-elements-1_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/stellar_vue_free/dash-1_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/free_templates/stellar_vue_free/icons_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/pill-badges_jpg.png
+/home/vimalvt/Desktop/Converter Test/free_templates_png/tab-elements_jpg.png
+free_templates/.DS_Store
+free_templates/Foi app landing page/.DS_Store
+free_templates/Halloween Coming Soon Template/.DS_Store
+free_templates/Hiro Landing/lv_0_20240925185720.mp4
+free_templates/Miri Landing/.DS_Store
+free_templates/Star Admin React Free/.DS_Store
+free_templates/Stellar React Free/.DS_Store
+free_templates/azia_admin_free/.DS_Store
+free_templates/celestial_free_admin_template/.DS_Store
+free_templates/corona_admin_free/.DS_Store
+free_templates/free_bootstrap_resume/.DS_Store
+free_templates/material_dash_free/.DS_Store
+free_templates/purple_admin_free/.DS_Store
+free_templates/spica_free_dashboard/.DS_Store
+free_templates/star_admin/.DS_Store
+free_templates/star_admin2_free/.DS_Store
+free_templates/stellar_admin_free/.DS_Store
